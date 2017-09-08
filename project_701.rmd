@@ -1,0 +1,65 @@
+---
+title: "Project_701"
+author: "n9617761"
+date: "21 August2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(party)
+library(party)
+library(caret)
+library(e1071)
+```
+
+```{r spine}
+#importing dataset
+Spine_Data<-read.csv("~/Dataset_spine.csv", sep=",", header = TRUE)
+
+#inspecting the data structure
+summary(Spine_Data)
+
+#check null values in dataset
+any(is.na(Spine_Data))
+
+#eliminate duplicate rows if present in dataset
+distinct(Spine_Data)
+
+```
+
+```{r}
+#define column data
+names(Spine_Data)<-c ("Degree_spondylolisthesis","Pelvic_incidence","Pelvic_tilt","Lumbar_lordosis_angle","Pelvic_radius","Sacral_slope","Cervical_tilt","Pelvic_slope","Direct_tilt","Thoracic_slope","Sacrum_angle","Scoliosis_slope","Class")
+
+
+```
+
+```{r}
+#  "seed" a random number generator 
+set.seed(1234)
+
+# Split the data into 70% training, 30% test
+ind <- sample(2, nrow(Spine_Data), replace=TRUE, prob=c(0.7, 0.3))
+train_data <- Spine_Data[ind==1,]
+test_data <- Spine_Data[ind==2,]
+```
+
+```{r}
+
+formula <- Class ~ Degree_spondylolisthesis + Pelvic_incidence + Pelvic_tilt + Lumbar_lordosis_angle + Pelvic_radius + Sacral_slope + Cervical_tilt + Pelvic_slope + Direct_tilt + Thoracic_slope + Sacrum_angle + Scoliosis_slope
+
+Spine_Data_ctree <- ctree(formula, data = train_data)
+```
+
+```{r}
+table(predict(Spine_Data_ctree, newdata = test_data), test_data$Class)
+
+confusionMatrix(predict(Spine_Data_ctree, newdata = test_data), test_data$Class)
+```
+
+```{r}
+
+```
+
